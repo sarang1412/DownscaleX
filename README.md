@@ -1,8 +1,8 @@
 
-# **DownscaleX: A Comparative Framework for Weather Downscaling**  
+# **DownscaleX: A Comparative project for Weather Downscaling**  
 
 ### **📌 Overview**  
-DownscaleX is a modular framework for comparing different **weather downscaling techniques**, including:  
+DownscaleX a fancy name for my project for comparing different **weather downscaling techniques**, including:  
 - **Dynamical Downscaling** (NCUM-R)  
 - **Statistical Downscaling**  
 - **Deep Learning-Based Downscaling** (DL4DS)  
