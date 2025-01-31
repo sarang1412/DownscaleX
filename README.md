@@ -29,10 +29,9 @@ cd DownscaleX
 ---
 
 ### **📊 Features**  
-✅ **Comparative Analysis** – Dynamical, statistical & ML-based downscaling  
-✅ **Modular & Reproducible** – Easy to modify and extend  
-✅ **Advanced Evaluation Metrics** – RMSE, MAE, CRPS, Bias correction, etc.  
-✅ **Visualization Tools** – Python/GrADS-based spatial plots  
+✅ **Comparative Analysis** – Dynamical, statistical & ML-based downscaling   
+❌ **Advanced Evaluation Metrics** – RMSE, MAE, CRPS, Bias correction, etc.  
+✅ **Visualization Tools** – Python based spatial plots  
 
 ---
 
@@ -42,7 +41,7 @@ cd DownscaleX
 ---
 
 ### **📝 To-Do List**  
-- [ ] Plotting mean rainfall, variance and bias spatial and temporal
+- [🅿️] Plotting mean rainfall, variance and bias spatial and temporal
 - [ ] 
 - [ ]  
 
@@ -54,7 +53,7 @@ Secret for now !!
 ---
 
 ### **📜 License**  
-This project is licensed under the **Who_Knoows_what License**.  
+This project is licensed under the **THeRe_iS_No_LIcEnsE License**.  
 
 ---
 
