@@ -13,7 +13,7 @@ The goal is to evaluate and improve the accuracy of downscaling methods for bett
 
 ### **📂 Repository Structure**  
 ```
-coming soon 
+coming soon™ 
 ```
 
 ---
@@ -21,7 +21,7 @@ coming soon
 ### **🛠 Setup & Installation**  
 Clone the repository:  
 ```bash
-git clone https://github.com/yourusername/DownscaleX.git
+[https://github.com/sarang1412/DownscaleX.git]
 cd DownscaleX
 ```
 
