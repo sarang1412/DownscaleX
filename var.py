@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import matplotlib.dates as mdates
 import dask.array as da
+import geopandas as gpd
+import rioxarray
+from shapely.geometry import mapping
 
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc', )
@@ -38,6 +41,16 @@ ncum_g_5_regridded = ncum_g_5_regridded.sel(lat=slice(6, 41), lon=slice(65, 106)
 #ncum_r_1_regridded = ncum_r_1_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
 #ncum_r_1_regridded = ncum_r_1_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
 #ncum_r_1_regridded = ncum_r_1_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
+
+# Shapefile
+shapefile_path = "e:\\Dissertation\\data\\SHP&DEM\\shp\\India_State_Boundary_02may2020.shp"
+shape = gpd.read_file(shapefile_path)
+#shape = shape.to_crs(epsg=4326)
+
+obs = obs.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_1_regridded = ncum_g_1_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_3_regridded = ncum_g_3_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_5_regridded = ncum_g_5_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
 #proper date format
 obs['time'] = pd.to_datetime(obs['time'].values)
@@ -78,10 +91,10 @@ data_variances = [
     #(ncum_r_5_variance, 'NCUM-R 4km to 10Km (day 5 forecast)')
 ]
 
-
-plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_1_variance, label="NCUM-G 12Km to 10Km (day 1 forecast)")
-plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_3_variance, label="NCUM-G 12Km to 10Km (day 1 forecast)")
-plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_5_variance, label="NCUM-G 12Km to 10Km (day 1 forecast)")
+plt.plot(ncum_g_1_variance['dayofyear'], obs_variance, label="Observed data 10Km",color = "black")
+plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_1_variance, label="NCUM-G 12Km to 10Km (day 1 forecast)",color = "red")
+plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_3_variance, label="NCUM-G 12Km to 10Km (day 3 forecast)",color = "blue")
+plt.plot(ncum_g_1_variance['dayofyear'], ncum_g_5_variance, label="NCUM-G 12Km to 10Km (day 5 forecast)",color = "green")
 plt.xlabel('Time')
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator(bymonthday=1))
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%B'))
