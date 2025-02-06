@@ -2,6 +2,9 @@ import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import geopandas as gpd
+import rioxarray
+from shapely.geometry import mapping
 
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc' )
@@ -24,6 +27,16 @@ ncum_g_5_regridded = ncum_g_5.interp_like(obs, method='nearest')
 #ncum_r_1_regridded = ncum_r_1.interp_like(obs, method='nearest')
 #ncum_r_3_regridded = ncum_r_3.interp_like(obs, method='nearest')
 #ncum_r_5_regridded = ncum_r_5.interp_like(obs, method='nearest')
+
+# Shapefile
+shapefile_path = "e:\\Dissertation\\data\\SHP&DEM\\shp\\India_State_Boundary_02may2020.shp"
+shape = gpd.read_file(shapefile_path)
+#shape = shape.to_crs(epsg=4326)
+
+obs = obs.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_1_regridded = ncum_g_1_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_3_regridded = ncum_g_3_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_5_regridded = ncum_g_5_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
 #lat and lon slice
 obs = obs.sel(lat=slice(6, 41), lon=slice(65, 106))
