@@ -49,33 +49,39 @@ ncum_r_3_event = ncum_r_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 
 plt.figure(figsize=(14, 12))
 
-# Plot for Observed Mean Rainfall
+#lat and lon slice
+obs_event = obs_event.sel(lat=slice(6, 41), lon=slice(65, 106))#62
+ncum_r_1_event = ncum_r_1_event.sel(lat=slice(6, 41), lon=slice(65, 106))
+ncum_r_2_event = ncum_r_2_event.sel(lat=slice(6, 41), lon=slice(65, 106))
+ncum_r_3_event = ncum_r_3_event.sel(lat=slice(6, 41), lon=slice(65, 106))
+
+# Plot for Observed Rainfall
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
-obs_event['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100 
+obs_event['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100 
 )
 ax1.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax1, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
 ax1.set_title('Event Rainfall - Observation', fontsize=12)
 
-# Plot for NCUM-G Day 1 Mean Rainfall
+# Plot for NCUM-G Day 1
 ax2 = plt.subplot(2, 2, 2, projection=ccrs.PlateCarree())
-ncum_r_1_event['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_1_event['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
 )
 ax2.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax2, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
 ax2.set_title('Event Rainfall - NCUM-R Day 1', fontsize=12)
 
-# Plot for NCUM-G Day 2 Mean Rainfall
+# Plot for NCUM-G Day 2
 ax3 = plt.subplot(2, 2, 3, projection=ccrs.PlateCarree())
-ncum_r_2_event['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_2_event['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
 )
 ax3.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax3, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
 ax3.set_title('Event Rainfall - NCUM-R Day 2', fontsize=12)
 
-# Plot for NCUM-G Day 3 Mean Rainfall
+# Plot for NCUM-G Day 3
 ax4 = plt.subplot(2, 2, 4, projection=ccrs.PlateCarree())
-ncum_r_3_event['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_3_event['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
 )
 ax4.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax4, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
