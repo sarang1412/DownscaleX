@@ -56,7 +56,7 @@ bias_ncum_r_3 = mean_ncum_r_3 - mean_obs
 bias_ncum_r_2 = mean_ncum_r_2 - mean_obs
 
 # Plot Bias NCUM-G
-levels = np.arange(-16, 20, 1)
+levels = np.arange(-9, 10, 1)
 cmap = plt.get_cmap('RdBu', len(levels) - 1) 
 norm = mcolors.BoundaryNorm(levels, cmap.N) 
 

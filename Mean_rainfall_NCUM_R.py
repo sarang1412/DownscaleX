@@ -56,7 +56,7 @@ plt.figure(figsize=(14, 12))
 
 # Plot for Observed Mean Rainfall
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
-obs_mean['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100 
+obs_mean['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax1.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax1, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -64,7 +64,7 @@ ax1.set_title('Mean Rainfall Observation', fontsize=12)
 
 # Plot for NCUM-G Day 1 Mean Rainfall
 ax2 = plt.subplot(2, 2, 2, projection=ccrs.PlateCarree())
-ncum_r_1_mean['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_1_mean['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax2.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax2, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -72,7 +72,7 @@ ax2.set_title('Mean Rainfall NCUM-R Day 1', fontsize=12)
 
 # Plot for NCUM-G Day 2 Mean Rainfall
 ax3 = plt.subplot(2, 2, 3, projection=ccrs.PlateCarree())
-ncum_r_2_mean['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_2_mean['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax3.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax3, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -80,7 +80,7 @@ ax3.set_title('Mean Rainfall NCUM-R Day 2', fontsize=12)
 
 # Plot for NCUM-G Day 3 Mean Rainfall
 ax4 = plt.subplot(2, 2, 4, projection=ccrs.PlateCarree())
-ncum_r_3_mean['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=100
+ncum_r_3_mean['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax4.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax4, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())

@@ -1,13 +1,6 @@
 import xarray as xr 
-import numpy as np 
-import matplotlib.pyplot as plt
-import pandas as pd
-import matplotlib.dates as mdates
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.colors as mcolors
 import geopandas as gpd
-import rioxarray
+import matplotlib.pyplot as plt
 from shapely.geometry import mapping
 
 
@@ -24,10 +17,12 @@ obs = obs.sel(time=slice('2021-06-01T03:00:00.000000000', '2024-09-30T03:00:00.0
 ncum_g_1 = ncum_g_1.rename({'latitude': 'lat', 'longitude': 'lon'})
 ncum_g_3 = ncum_g_3.rename({'latitude': 'lat', 'longitude': 'lon'})
 ncum_g_2 = ncum_g_2.rename({'latitude': 'lat', 'longitude': 'lon'})
+
 #regrid
 ncum_g_1_regridded = ncum_g_1.interp_like(obs, method='nearest')
 ncum_g_3_regridded = ncum_g_3.interp_like(obs, method='nearest')
 ncum_g_2_regridded = ncum_g_2.interp_like(obs, method='nearest')
+
 #lat and lon slice
 obs = obs.sel(lat=slice(6, 41), lon=slice(65, 106))
 ncum_g_1_regridded = ncum_g_1_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
@@ -49,6 +44,12 @@ obs = obs.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), sha
 ncum_g_1 = ncum_g_1.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_3 = ncum_g_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_2 = ncum_g_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+
+# Filter data for threshold 0 - 30 mm
+obs = obs.where((obs >= 0) & (obs <= 30), drop=True)
+ncum_g_1 = ncum_g_1.where((ncum_g_1 >= 0) & (ncum_g_1 <= 30), drop=True)
+ncum_g_3 = ncum_g_3.where((ncum_g_3 >= 0) & (ncum_g_3 <= 30), drop=True)
+ncum_g_2 = ncum_g_2.where((ncum_g_2 >= 0) & (ncum_g_2 <= 30), drop=True)
 
 # rainfall to binary
 threshold = 1
@@ -115,4 +116,5 @@ plt.grid(True)
 
 # Show plot
 plt.show()
+
 

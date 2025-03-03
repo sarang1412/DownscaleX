@@ -46,10 +46,17 @@ ncum_g_1_regridded['time'] = pd.to_datetime(ncum_g_1_regridded['time'].values)
 ncum_g_3_regridded['time'] = pd.to_datetime(ncum_g_3_regridded['time'].values)
 ncum_g_2_regridded['time'] = pd.to_datetime(ncum_g_2_regridded['time'].values)
 
-mean_obs = obs['rf'].mean(dim=('lat', 'lon')) 
-mean_ncum_g_1 = ncum_g_1_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
-mean_ncum_g_3 = ncum_g_3_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
-mean_ncum_g_2 = ncum_g_2_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
+# Filter data for threshold 0 - 30 mm
+obs_filtered = obs.where((obs['rf'] >= 0) & (obs['rf'] <= 30), drop=True)
+ncum_g_1_filtered = ncum_g_1_regridded.where((ncum_g_1_regridded['APCP_surface'] >= 0) & (ncum_g_1_regridded['APCP_surface'] <= 30), drop=True)
+ncum_g_3_filtered = ncum_g_3_regridded.where((ncum_g_3_regridded['APCP_surface'] >= 0) & (ncum_g_3_regridded['APCP_surface'] <= 30), drop=True)
+ncum_g_2_filtered = ncum_g_2_regridded.where((ncum_g_2_regridded['APCP_surface'] >= 0) & (ncum_g_2_regridded['APCP_surface'] <= 30), drop=True)
+
+# Calculate mean
+mean_obs = obs_filtered['rf'].mean(dim=('lat', 'lon'))
+mean_ncum_g_1 = ncum_g_1_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
+mean_ncum_g_3 = ncum_g_3_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
+mean_ncum_g_2 = ncum_g_2_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
 
 # biases
 bias_ncum_g_1 = mean_ncum_g_1 - mean_obs

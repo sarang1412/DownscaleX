@@ -48,10 +48,17 @@ ncum_r_1_regridded['time'] = pd.to_datetime(ncum_r_1_regridded['time'].values)
 ncum_r_3_regridded['time'] = pd.to_datetime(ncum_r_3_regridded['time'].values)
 ncum_r_2_regridded['time'] = pd.to_datetime(ncum_r_2_regridded['time'].values)
 
-mean_obs = obs['rf'].mean(dim=('lat', 'lon')) 
-mean_ncum_r_1 = ncum_r_1_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
-mean_ncum_r_3 = ncum_r_3_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
-mean_ncum_r_2 = ncum_r_2_regridded['APCP_surface'].mean(dim=('lat', 'lon'))
+# Filter data for threshold 0 - 30 mm
+obs_filtered = obs.where((obs['rf'] >= 0) & (obs['rf'] <= 30), drop=True)
+ncum_r_1_filtered = ncum_r_1_regridded.where((ncum_r_1_regridded['APCP_surface'] >= 0) & (ncum_r_1_regridded['APCP_surface'] <= 30), drop=True)
+ncum_r_3_filtered = ncum_r_3_regridded.where((ncum_r_3_regridded['APCP_surface'] >= 0) & (ncum_r_3_regridded['APCP_surface'] <= 30), drop=True)
+ncum_r_2_filtered = ncum_r_2_regridded.where((ncum_r_2_regridded['APCP_surface'] >= 0) & (ncum_r_2_regridded['APCP_surface'] <= 30), drop=True)
+
+# Calculate mean
+mean_obs = obs_filtered['rf'].mean(dim=('lat', 'lon'))
+mean_ncum_r_1 = ncum_r_1_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
+mean_ncum_r_3 = ncum_r_3_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
+mean_ncum_r_2 = ncum_r_2_filtered['APCP_surface'].mean(dim=('lat', 'lon'))
 
 # biases
 bias_ncum_r_1 = mean_ncum_r_1 - mean_obs
@@ -65,13 +72,17 @@ bias_ncum_r_2 = bias_ncum_r_2.groupby('time.year').mean()
 
 #plot
 plt.figure(figsize=(12,6))
-plt.plot(bias_ncum_r_1['year'],bias_ncum_r_1, label='NCUM-G bias day 1',color='purple')
-plt.plot(bias_ncum_r_2['year'],bias_ncum_r_2, label='NCUM-G bias day 2',color='blue')
-plt.plot(bias_ncum_r_3['year'],bias_ncum_r_3, label='NCUM-G bias day 3',color='green')
-plt.title('Comparison of Bias')
+
 plt.xlabel('Time')
 plt.xticks(bias_ncum_r_1['year'].values)
 plt.ylabel('Mean Rainfall Bias(mm)')
+plt.xlabel('Time')
+plt.title('Comparison of Bias')
+plt.plot(bias_ncum_r_1['year'],bias_ncum_r_1, label='NCUM-R bias day 1',color='purple')
+plt.plot(bias_ncum_r_2['year'],bias_ncum_r_2, label='NCUM-R bias day 2',color='blue')
+plt.plot(bias_ncum_r_3['year'],bias_ncum_r_3, label='NCUM-R bias day 3',color='green')
+plt.ylabel('Mean Rainfall Bias(mm)')
+plt.xticks(bias_ncum_g_1['year'].values)
 plt.legend()
 plt.grid(True)
 plt.show()
