@@ -31,7 +31,7 @@ ncum_g_2_regridded = ncum_g_2_regridded.sel(lat=slice(6, 41), lon=slice(65, 106)
 ncum_g_3_regridded = ncum_g_3_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
 
 # Select event
-t = "2023-07-10T0:00:00.000000000"
+t = "2023-09-23T00:00:00.000000000"
 obs_event = obs.sel(time= t, method='nearest')
 ncum_g_day_1 = ncum_g_1_regridded.sel(time=t, method='nearest')
 ncum_g_day_3 = ncum_g_3_regridded.sel(time=t, method='nearest')
@@ -48,13 +48,13 @@ ncum_g_1_event = ncum_g_day_1.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 ncum_g_2_event = ncum_g_day_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_3_event = ncum_g_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
-plt.figure(figsize=(14, 12))
+plt.figure(figsize=(11, 9))
 
 # Plot for Observed Rainfall
-city = "Dehradun"
-clon = 78.03
-clat = 30.32
-extent = [74, 79, 28, 33] 
+city = "Nagpur"
+clon = 79.14
+clat = 21.09
+extent = [74, 84, 18, 28] 
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
 obs_event['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=120 
 )

@@ -95,7 +95,7 @@ ax3.set_title('Mean Rainfall NCUM-G Day 2', fontsize=12)
 
 # Plot for NCUM-G Day 3 Mean Rainfall
 ax4 = plt.subplot(2, 2, 4, projection=ccrs.PlateCarree())
-ncum_g_3_mean['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=54
+ncum_g_3_mean['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax4.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax4, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())

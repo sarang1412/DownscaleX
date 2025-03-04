@@ -47,7 +47,7 @@ ncum_g_1_event = ncum_g_day_1.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 ncum_g_2_event = ncum_g_day_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_3_event = ncum_g_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
-plt.figure(figsize=(14, 12))
+plt.figure(figsize=(11,9))
 
 #lat and lon slice
 obs_event = obs_event.sel(lat=slice(6, 41), lon=slice(65, 106))#62

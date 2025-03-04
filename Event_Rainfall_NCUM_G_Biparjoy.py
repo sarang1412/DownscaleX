@@ -48,13 +48,13 @@ ncum_g_1_event = ncum_g_day_1.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 ncum_g_2_event = ncum_g_day_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_3_event = ncum_g_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
-plt.figure(figsize=(14, 12))
+plt.figure(figsize=(11, 9))
 
 # Plot for Observed Rainfall
 city = "Naliya"
 clon = 68.82
 clat = 23.25
-extent = [68, 72, 22, 25] 
+extent = [65, 75, 18, 28] 
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
 obs_event['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200 
 )
