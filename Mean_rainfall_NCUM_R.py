@@ -1,15 +1,10 @@
 import xarray as xr
-import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-import matplotlib.dates as mdates
-import dask.array as da
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-import matplotlib.colors as mcolors
 import geopandas as gpd
-import rioxarray
 from shapely.geometry import mapping
+from matplotlib.colors import LinearSegmentedColormap
 
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc', )
@@ -54,9 +49,13 @@ ncum_r_3_mean = ncum_r_3_mean.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 
 plt.figure(figsize=(14, 12))
 
+# Create a custom colormap
+hex_colors = ['#feecbe','#dcfecb','#95ff98','#64fffc','#04c4ff','#0066ff','#9364ff','#dc64ff','#ff01fe']
+hexa = LinearSegmentedColormap.from_list('custom_gradient', hex_colors)
+
 # Plot for Observed Mean Rainfall
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
-obs_mean['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
+obs_mean['rf'].plot(ax=ax1, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax1.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax1, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -64,7 +63,7 @@ ax1.set_title('Mean Rainfall Observation', fontsize=12)
 
 # Plot for NCUM-G Day 1 Mean Rainfall
 ax2 = plt.subplot(2, 2, 2, projection=ccrs.PlateCarree())
-ncum_r_1_mean['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
+ncum_r_1_mean['APCP_surface'].plot(ax=ax2, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax2.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax2, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -72,7 +71,7 @@ ax2.set_title('Mean Rainfall NCUM-R Day 1', fontsize=12)
 
 # Plot for NCUM-G Day 2 Mean Rainfall
 ax3 = plt.subplot(2, 2, 3, projection=ccrs.PlateCarree())
-ncum_r_2_mean['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
+ncum_r_2_mean['APCP_surface'].plot(ax=ax3, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax3.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax3, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
@@ -80,7 +79,7 @@ ax3.set_title('Mean Rainfall NCUM-R Day 2', fontsize=12)
 
 # Plot for NCUM-G Day 3 Mean Rainfall
 ax4 = plt.subplot(2, 2, 4, projection=ccrs.PlateCarree())
-ncum_r_3_mean['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
+ncum_r_3_mean['APCP_surface'].plot(ax=ax4, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'mean rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=64
 )
 ax4.add_feature(cfeature.COASTLINE, linewidth=0.5)
 shape.boundary.plot(ax=ax4, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
