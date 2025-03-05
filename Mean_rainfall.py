@@ -10,6 +10,7 @@ import matplotlib.colors as mcolors
 import geopandas as gpd
 import rioxarray
 from shapely.geometry import mapping
+from matplotlib.colors import LinearSegmentedColormap
 
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc', )
@@ -67,18 +68,10 @@ ncum_g_1_mean = ncum_g_1_mean.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 ncum_g_2_mean = ncum_g_2_mean.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 ncum_g_3_mean = ncum_g_3_mean.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
-from matplotlib.colors import LinearSegmentedColormap
-
 plt.figure(figsize=(14, 12))
 
-# Define the HEX colors with transparency for the first color
-hex_colors = ['#feecbe','#dcfecb','#95ff98','#64fffc','#04c4ff','#0066ff','#9364ff','#dc64ff','#ff01fe']
-
 # Create a custom colormap
-# Define the HEX colors with transparency for the first color
 hex_colors = ['#feecbe','#dcfecb','#95ff98','#64fffc','#04c4ff','#0066ff','#9364ff','#dc64ff','#ff01fe']
-
-# Create a custom colormap
 hexa = LinearSegmentedColormap.from_list('custom_gradient', hex_colors)
 
 # Plot for Observed Mean Rainfall
