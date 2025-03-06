@@ -4,7 +4,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import geopandas as gpd
 from shapely.geometry import mapping
-
+from matplotlib.colors import LinearSegmentedColormap
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc', )
 ncum_g_1 = xr.open_dataset('e:\\Dissertation\\data\\ncum_day1rf_jjas2021-24.nc')
@@ -49,14 +49,15 @@ ncum_g_2_event = ncum_g_day_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry
 ncum_g_3_event = ncum_g_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
 plt.figure(figsize=(11, 9))
-
+hex_colors = ['#feecbe','#dcfecb','#95ff98','#64fffc','#04c4ff','#0066ff','#9364ff','#dc64ff','#ff01fe']
+hexa = LinearSegmentedColormap.from_list('custom_gradient', hex_colors)
 # Plot for Observed Rainfall
 city = "Naliya"
 clon = 68.82
 clat = 23.25
 extent = [65, 75, 18, 28] 
 ax1 = plt.subplot(2, 2, 1, projection=ccrs.PlateCarree())
-obs_event['rf'].plot(ax=ax1, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200 
+obs_event['rf'].plot(ax=ax1, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200 
 )
 ax1.add_feature(cfeature.COASTLINE, linewidth=0.5)
 ax1.set_extent(extent, crs=ccrs.PlateCarree())
@@ -67,7 +68,7 @@ ax1.set_title('Event Rainfall - Observation', fontsize=12)
 
 # Plot for NCUM-G Day 1
 ax2 = plt.subplot(2, 2, 2, projection=ccrs.PlateCarree())
-ncum_g_1_event['APCP_surface'].plot(ax=ax2, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
+ncum_g_1_event['APCP_surface'].plot(ax=ax2, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
 )
 ax2.add_feature(cfeature.COASTLINE, linewidth=0.5)
 ax2.set_extent(extent, crs=ccrs.PlateCarree())
@@ -80,7 +81,7 @@ ax2.set_title('Event Rainfall - NCUM-G Day 1', fontsize=12)
 ax3 = plt.subplot(2, 2, 3, projection=ccrs.PlateCarree())
 ax3.plot(clon, clat, "ko", transform=ccrs.PlateCarree())
 ax3.text(clon + 0.03, clat, city, fontsize=12, transform=ccrs.PlateCarree())
-ncum_g_2_event['APCP_surface'].plot(ax=ax3, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
+ncum_g_2_event['APCP_surface'].plot(ax=ax3, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
 )
 ax3.add_feature(cfeature.COASTLINE, linewidth=0.5)
 ax3.set_extent(extent, crs=ccrs.PlateCarree())
@@ -89,7 +90,7 @@ ax3.set_title('Event Rainfall - NCUM-G Day 2', fontsize=12)
 
 # Plot for NCUM-G Day 3
 ax4 = plt.subplot(2, 2, 4, projection=ccrs.PlateCarree())
-ncum_g_3_event['APCP_surface'].plot(ax=ax4, cmap='Blues', transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
+ncum_g_3_event['APCP_surface'].plot(ax=ax4, cmap=hexa, transform=ccrs.PlateCarree(),cbar_kwargs={'label': 'rainfall(mm/day)','shrink': 0.9}, vmin=0,vmax=200
 )
 ax4.add_feature(cfeature.COASTLINE, linewidth=0.5)
 ax4.set_extent(extent, crs=ccrs.PlateCarree())
