@@ -31,7 +31,7 @@ ncum_g_2_regridded = ncum_g_2_regridded.sel(lat=slice(6, 41), lon=slice(65, 106)
 ncum_g_3_regridded = ncum_g_3_regridded.sel(lat=slice(6, 41), lon=slice(65, 106))
 
 # Select event
-t = "2023-06-16T12:00:00.000000000"
+t = "2023-06-16T00:00:00.000000000"
 obs_event = obs.sel(time= t, method='nearest')
 ncum_g_day_1 = ncum_g_1_regridded.sel(time=t, method='nearest')
 ncum_g_day_3 = ncum_g_3_regridded.sel(time=t, method='nearest')
@@ -43,10 +43,10 @@ shape = gpd.read_file(shapefile_path)
 shape = shape.set_crs(epsg=4326, allow_override=True)
 shape = shape.to_crs(epsg=4326)
 
-obs_event = obs_event.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
-ncum_g_1_event = ncum_g_day_1.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
-ncum_g_2_event = ncum_g_day_2.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
-ncum_g_3_event = ncum_g_day_3.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+obs_event = obs_event#.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_1_event = ncum_g_day_1#.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_2_event = ncum_g_day_2#.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
+ncum_g_3_event = ncum_g_day_3#.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
 plt.figure(figsize=(11, 9))
 hex_colors = ['#feecbe','#dcfecb','#95ff98','#64fffc','#04c4ff','#0066ff','#9364ff','#dc64ff','#ff01fe']
