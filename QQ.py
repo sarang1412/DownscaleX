@@ -39,19 +39,19 @@ for ds in [obs, ncum_r_1, ncum_r_2, ncum_r_3]:
     ds = ds.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
 # Extract rainfall
-def preprocess_data(data_array, var_name):
+def ex_data(data_array, var_name):
     data = data_array[var_name].mean(dim=['time']).values.flatten()
     data = data[~np.isnan(data)]
     data = data[data > 0]
     return data
 
-obs_data = preprocess_data(obs, 'rf')
-ncum_r1_data = preprocess_data(ncum_r_1, 'APCP_surface')
-ncum_r2_data = preprocess_data(ncum_r_2, 'APCP_surface')
-ncum_r3_data = preprocess_data(ncum_r_3, 'APCP_surface')
+obs_data = ex_data(obs, 'rf')
+ncum_r1_data = ex_data(ncum_r_1, 'APCP_surface')
+ncum_r2_data = ex_data(ncum_r_2, 'APCP_surface')
+ncum_r3_data = ex_data(ncum_r_3, 'APCP_surface')
 
 #Q-Q plot
-def qq_plot(model_data, reference_data, label, ax):
+def qq(model_data, reference_data, label, ax):
     model_quantiles = np.sort(model_data)
     reference_quantiles = np.sort(reference_data)
 
@@ -60,16 +60,16 @@ def qq_plot(model_data, reference_data, label, ax):
     reference_quantiles = reference_quantiles[:min_len]
 
     ax.scatter(reference_quantiles, model_quantiles, label=label, alpha=0.6)
-    ax.plot(reference_quantiles, reference_quantiles, 'r--', label='1:1 Line')  # 1:1 reference line
+    ax.plot(reference_quantiles, reference_quantiles, 'r--', label='1:1 Line')
     ax.set_xlabel('Observed Rainfall Quantiles')
     ax.set_ylabel('Predicted Rainfall Quantiles')
     ax.set_title(f'Q-Q Plot: {label}')
     ax.legend()
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-qq_plot(ncum_r1_data, obs_data, "NCUM R Day1 vs OBS", axes[0])
-qq_plot(ncum_r2_data, obs_data, "NCUM R Day2 vs OBS", axes[1])
-qq_plot(ncum_r3_data, obs_data, "NCUM R Day3 vs OBS", axes[2])
+qq(ncum_r1_data, obs_data, "NCUM R Day1 vs OBS", axes[0])
+qq(ncum_r2_data, obs_data, "NCUM R Day2 vs OBS", axes[1])
+qq(ncum_r3_data, obs_data, "NCUM R Day3 vs OBS", axes[2])
 
 plt.tight_layout()
 plt.show()
