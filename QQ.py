@@ -7,69 +7,80 @@ from shapely.geometry import mapping
 import rioxarray
 
 #data
-obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc')
-ncum_r_1 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day1rf_jjas2021-24.nc')
-ncum_r_2 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day2rf_jjas2021-24.nc')
-ncum_r_3 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day3rf_jjas2021-24.nc')
+obs = xr.open_dataset('e:\\Dissertation\\data\\obs_regridded.nc')
+ncum_r_1 = xr.open_dataset('e:\\Dissertation\\data\\ncum_r_1_regridded.nc')
+ncum_r_2 = xr.open_dataset('e:\\Dissertation\\data\\ncum_r_2_regridded.nc')
+ncum_r_3 = xr.open_dataset('e:\\Dissertation\\data\\ncum_r_3_regridded.nc')
 
-# Trim 
-obs = obs.sel(time=slice('2021-06-01', '2024-09-30'))
+obs_data = obs["rf"].mean(dim=['time']).values.flatten()
+obs_data = obs_data[~np.isnan(obs_data)]
+obs_data = obs_data[obs_data > 0]
 
-#lat/lon to match
-ncum_r_1 = ncum_r_1.rename({'latitude': 'lat', 'longitude': 'lon'})
-ncum_r_2 = ncum_r_2.rename({'latitude': 'lat', 'longitude': 'lon'})
-ncum_r_3 = ncum_r_3.rename({'latitude': 'lat', 'longitude': 'lon'})
+ncum_r1_data = ncum_r_1["APCP_surface"].mean(dim=['time']).values.flatten()
+ncum_r1_data = ncum_r1_data[~np.isnan(ncum_r1_data)]
+ncum_r1_data = ncum_r1_data[ncum_r1_data > 0]
+ncum_r2_data = ncum_r_2["APCP_surface"].mean(dim=['time']).values.flatten()
+ncum_r2_data = ncum_r2_data[~np.isnan(ncum_r2_data)]
+ncum_r2_data = ncum_r2_data[ncum_r2_data > 0]
+ncum_r3_data = ncum_r_3["APCP_surface"].mean(dim=['time']).values.flatten()
+ncum_r3_data = ncum_r3_data[~np.isnan(ncum_r3_data)]
+ncum_r3_data = ncum_r3_data[ncum_r3_data > 0]
 
-# Regrid 
-ncum_r_1 = ncum_r_1.interp_like(obs, method='nearest')
-ncum_r_2 = ncum_r_2.interp_like(obs, method='nearest')
-ncum_r_3 = ncum_r_3.interp_like(obs, method='nearest')
 
-# slicing
-obs = obs.sel(lat=slice(6, 41), lon=slice(65, 106))
-ncum_r_1 = ncum_r_1.sel(lat=slice(6, 41), lon=slice(65, 106))
-ncum_r_2 = ncum_r_2.sel(lat=slice(6, 41), lon=slice(65, 106))
-ncum_r_3 = ncum_r_3.sel(lat=slice(6, 41), lon=slice(65, 106))
-
-# Shapefile
-shapefile_path = "e:\\Dissertation\\data\\SHP&DEM\\shp\\India_State_Boundary_02may2020.shp"
-shape = gpd.read_file(shapefile_path)
-
-for ds in [obs, ncum_r_1, ncum_r_2, ncum_r_3]:
-    ds = ds.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
-
-# Extract rainfall
-def ex_data(data_array, var_name):
-    data = data_array[var_name].mean(dim=['time']).values.flatten()
-    data = data[~np.isnan(data)]
-    data = data[data > 0]
-    return data
-
-obs_data = ex_data(obs, 'rf')
-ncum_r1_data = ex_data(ncum_r_1, 'APCP_surface')
-ncum_r2_data = ex_data(ncum_r_2, 'APCP_surface')
-ncum_r3_data = ex_data(ncum_r_3, 'APCP_surface')
+print("Maximum ncum_r1", np.max(ncum_r1_data))
+print("Maximum ncum_r2", np.max(ncum_r2_data))
+print("Maximum ncum_r3", np.max(ncum_r3_data))
+print("Maximum obs", np.max(obs_data))
 
 #Q-Q plot
-def qq(model_data, reference_data, label, ax):
-    model_quantiles = np.sort(model_data)
-    reference_quantiles = np.sort(reference_data)
+reference_quantiles = np.sort(obs_data)
+model_quantiles_r1 = np.sort(ncum_r1_data)
+model_quantiles_r2 = np.sort(ncum_r2_data)
+model_quantiles_r3 = np.sort(ncum_r3_data)
     
-    #min_len = min(len(model_quantiles), len(reference_quantiles))
-    #model_quantiles = model_quantiles[:min_len]
-    #reference_quantiles = reference_quantiles[:min_len]
+min_len = min(len(model_quantiles_r1), len(reference_quantiles))
+model_quantiles_r1 = model_quantiles_r1[:min_len]
+reference_quantiles = reference_quantiles[:min_len]
 
-    ax.scatter(reference_quantiles, model_quantiles, label=label, alpha=0.6)
-    ax.plot(reference_quantiles, reference_quantiles, 'r--', label='1:1 Line')
-    ax.set_xlabel('Observed Rainfall Quantiles')
-    ax.set_ylabel('Predicted Rainfall Quantiles')
-    ax.set_title(f'Q-Q Plot: {label}')
-    ax.legend()
+min_len = min(len(model_quantiles_r2), len(reference_quantiles))
+model_quantiles_r2 = model_quantiles_r2[:min_len]
+reference_quantiles = reference_quantiles[:min_len]
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-qq(ncum_r1_data, obs_data, "NCUM R Day1 vs OBS", axes[0])
-qq(ncum_r2_data, obs_data, "NCUM R Day2 vs OBS", axes[1])
-qq(ncum_r3_data, obs_data, "NCUM R Day3 vs OBS", axes[2])
+min_len = min(len(model_quantiles_r3), len(reference_quantiles))
+model_quantiles_r3 = model_quantiles_r3[:min_len]
+reference_quantiles = reference_quantiles[:min_len]
+
+# ...existing code...
+
+#Q-Q plot
+reference_quantiles = np.sort(obs_data)
+model_quantiles_r1 = np.sort(ncum_r1_data)
+model_quantiles_r2 = np.sort(ncum_r2_data)
+model_quantiles_r3 = np.sort(ncum_r3_data)
+
+# Create subplots
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+# Plot for model_quantiles_r1
+min_len = min(len(model_quantiles_r1), len(reference_quantiles))
+axs[0].scatter(reference_quantiles[:min_len], model_quantiles_r1[:min_len], label="R1", alpha=0.6)
+axs[0].plot(reference_quantiles[:min_len], reference_quantiles[:min_len], 'r--', label='1:1 Line')
+axs[0].legend()
+axs[0].set_title('Q-Q plot: Model R1 vs Observed')
+
+# Plot for model_quantiles_r2
+min_len = min(len(model_quantiles_r2), len(reference_quantiles))
+axs[1].scatter(reference_quantiles[:min_len], model_quantiles_r2[:min_len], label="R2", alpha=0.6)
+axs[1].plot(reference_quantiles[:min_len], reference_quantiles[:min_len], 'r--', label='1:1 Line')
+axs[1].legend()
+axs[1].set_title('Q-Q plot: Model R2 vs Observed')
+
+# Plot for model_quantiles_r3
+min_len = min(len(model_quantiles_r3), len(reference_quantiles))
+axs[2].scatter(reference_quantiles[:min_len], model_quantiles_r3[:min_len], label="R3", alpha=0.6)
+axs[2].plot(reference_quantiles[:min_len], reference_quantiles[:min_len], 'r--', label='1:1 Line')
+axs[2].legend()
+axs[2].set_title('Q-Q plot: Model R3 vs Observed')
 
 plt.tight_layout()
 plt.show()
