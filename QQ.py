@@ -54,10 +54,10 @@ ncum_r3_data = ex_data(ncum_r_3, 'APCP_surface')
 def qq(model_data, reference_data, label, ax):
     model_quantiles = np.sort(model_data)
     reference_quantiles = np.sort(reference_data)
-
-    min_len = min(len(model_quantiles), len(reference_quantiles))
-    model_quantiles = model_quantiles[:min_len]
-    reference_quantiles = reference_quantiles[:min_len]
+    
+    #min_len = min(len(model_quantiles), len(reference_quantiles))
+    #model_quantiles = model_quantiles[:min_len]
+    #reference_quantiles = reference_quantiles[:min_len]
 
     ax.scatter(reference_quantiles, model_quantiles, label=label, alpha=0.6)
     ax.plot(reference_quantiles, reference_quantiles, 'r--', label='1:1 Line')
