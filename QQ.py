@@ -6,26 +6,26 @@ import geopandas as gpd
 from shapely.geometry import mapping
 import rioxarray
 
-# Load datasets
+#data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc')
 ncum_r_1 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day1rf_jjas2021-24.nc')
 ncum_r_2 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day2rf_jjas2021-24.nc')
 ncum_r_3 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day3rf_jjas2021-24.nc')
 
-# Trim dataset to common time range
+# Trim 
 obs = obs.sel(time=slice('2021-06-01', '2024-09-30'))
 
-# Rename lat/lon to match
+#lat/lon to match
 ncum_r_1 = ncum_r_1.rename({'latitude': 'lat', 'longitude': 'lon'})
 ncum_r_2 = ncum_r_2.rename({'latitude': 'lat', 'longitude': 'lon'})
 ncum_r_3 = ncum_r_3.rename({'latitude': 'lat', 'longitude': 'lon'})
 
-# Regrid models to match OBS grid
+# Regrid 
 ncum_r_1 = ncum_r_1.interp_like(obs, method='nearest')
 ncum_r_2 = ncum_r_2.interp_like(obs, method='nearest')
 ncum_r_3 = ncum_r_3.interp_like(obs, method='nearest')
 
-# Spatial slicing
+# slicing
 obs = obs.sel(lat=slice(6, 41), lon=slice(65, 106))
 ncum_r_1 = ncum_r_1.sel(lat=slice(6, 41), lon=slice(65, 106))
 ncum_r_2 = ncum_r_2.sel(lat=slice(6, 41), lon=slice(65, 106))
@@ -38,11 +38,11 @@ shape = gpd.read_file(shapefile_path)
 for ds in [obs, ncum_r_1, ncum_r_2, ncum_r_3]:
     ds = ds.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.apply(mapping), shape.crs)
 
-# Extract rainfall data, remove NaNs, and filter out zero values
+# Extract rainfall
 def preprocess_data(data_array, var_name):
     data = data_array[var_name].mean(dim=['time']).values.flatten()
-    data = data[~np.isnan(data)]  # Remove NaNs
-    data = data[data > 0]  # Remove zero values
+    data = data[~np.isnan(data)]
+    data = data[data > 0]
     return data
 
 obs_data = preprocess_data(obs, 'rf')
@@ -50,7 +50,7 @@ ncum_r1_data = preprocess_data(ncum_r_1, 'APCP_surface')
 ncum_r2_data = preprocess_data(ncum_r_2, 'APCP_surface')
 ncum_r3_data = preprocess_data(ncum_r_3, 'APCP_surface')
 
-# Function to plot Q-Q plot
+#Q-Q plot
 def qq_plot(model_data, reference_data, label, ax):
     model_quantiles = np.sort(model_data)
     reference_quantiles = np.sort(reference_data)
@@ -66,7 +66,6 @@ def qq_plot(model_data, reference_data, label, ax):
     ax.set_title(f'Q-Q Plot: {label}')
     ax.legend()
 
-# Plot Q-Q plots for all models
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 qq_plot(ncum_r1_data, obs_data, "NCUM R Day1 vs OBS", axes[0])
 qq_plot(ncum_r2_data, obs_data, "NCUM R Day2 vs OBS", axes[1])
