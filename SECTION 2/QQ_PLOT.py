@@ -1,21 +1,12 @@
 import xarray as xr
 import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 import geopandas as gpd
 from shapely.geometry import mapping
-from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import xarray as xr 
 import numpy as np 
 import matplotlib.pyplot as plt
-import pandas as pd
-import matplotlib.dates as mdates
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.colors as mcolors
 import geopandas as gpd
-import rioxarray
 from shapely.geometry import mapping
 
 #load data
