@@ -10,9 +10,9 @@ from matplotlib.colors import ListedColormap
 
 #load data
 obs = xr.open_dataset('e:\\Dissertation\\data\\IMD_MSG-2020-24-jjas.nc', )
-ncum_r_1 = xr.open_dataset('e:\\Dissertation\\data\\ncum_day1rf_jjas2021-24.nc')
-ncum_r_2 = xr.open_dataset('e:\\Dissertation\\data\\ncum_day2rf_jjas2021-24.nc')
-ncum_r_3 = xr.open_dataset('e:\\Dissertation\\data\\ncum_day3rf_jjas2021-24.nc')
+ncum_r_1 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day1rf_jjas2021-24.nc')
+ncum_r_2 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day2rf_jjas2021-24.nc')
+ncum_r_3 = xr.open_dataset('e:\\Dissertation\\data\\ncumr_day3rf_jjas2021-24.nc')
 ncum_r_2
 # Trim dataset
 obs = obs.sel(time=slice('2021-06-01T03:00:00.000000000', '2024-09-30T03:00:00.000000000'))
@@ -48,7 +48,7 @@ ncum_r3 = ncum_r_3_regridded.rio.write_crs("EPSG:4326").rio.clip(shape.geometry.
 
 
 # Compute frequency of exceedance
-threshold = 15.6 
+threshold = 64.5
 obs_freq = (obs['rf'] > threshold).sum(dim='time')  # Count occurrences over time
 ncum_r1_freq = (ncum_r1['APCP_surface'] > threshold).sum(dim='time')
 ncum_r2_freq = (ncum_r2['APCP_surface'] > threshold).sum(dim='time')
@@ -62,17 +62,17 @@ hexa = ListedColormap(hex_colors)
 
 # Plot function
 def plot_rainfall_freq(data, title, ax):
-    img = ax.pcolormesh(data['lon'], data['lat'], data, cmap=hexa, vmin=0, vmax=140, transform=ccrs.PlateCarree())
+    img = ax.pcolormesh(data['lon'], data['lat'], data, cmap=hexa, vmin=0, vmax=70, transform=ccrs.PlateCarree())
     shape.boundary.plot(ax=ax, edgecolor='black', linewidth=0.7, transform=ccrs.PlateCarree())
     ax.set_title(title, fontsize=12)
     return img
 
 fig, axes = plt.subplots(2, 2, figsize=(16, 12), subplot_kw={'projection': ccrs.PlateCarree()})
 
-img1 = plot_rainfall_freq(obs_freq, "Observed Rainfall > 64.5 mm", axes[0, 0])
-img2 = plot_rainfall_freq(ncum_r1_freq, "NCUM G Day 1 Rainfall > 15.6 mm", axes[0, 1])
-img3 = plot_rainfall_freq(ncum_r2_freq, "NCUM G Day 2 Rainfall > 15.6 mm", axes[1, 0])
-img4 = plot_rainfall_freq(ncum_r3_freq, "NCUM G Day 3 Rainfall > 15.6 mm", axes[1, 1])
+img1 = plot_rainfall_freq(obs_freq, "Observed Very Heavy Rainfall > 64.5 mm", axes[0, 0])
+img2 = plot_rainfall_freq(ncum_r1_freq, "NCUM R Day 1 Very Heavy Rainfall > 64.5 mm", axes[0, 1])
+img3 = plot_rainfall_freq(ncum_r2_freq, "NCUM R Day 2 Very Heavy Rainfall > 64.5 mm", axes[1, 0])
+img4 = plot_rainfall_freq(ncum_r3_freq, "NCUM R Day 3 Very Heavy Rainfall > 64.5 mm", axes[1, 1])
 
 cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
 cbar = fig.colorbar(img1, cax=cbar_ax)
