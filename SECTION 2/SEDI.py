@@ -25,9 +25,9 @@ GPQM_3 = xr.open_dataset('e:\\Dissertation\\data\\GPQM_ncumg_day3rf_jjas2020-24-
 GPQM_5 = xr.open_dataset('e:\\Dissertation\\data\\GPQM_ncumg_day5rf_jjas2020-24-0p25.nc')
 
 # === Harmonise dimension names ===
-ncum_1 = ncum_1.rename({'latitude': 'lat', 'longitude': 'lon'})
-ncum_3 = ncum_3.rename({'latitude': 'lat', 'longitude': 'lon'})
-ncum_5 = ncum_5.rename({'latitude': 'lat', 'longitude': 'lon'})
+ncum_1 = ncum_1.rename({'latitude': 'lat', 'longitude': 'lon', 'APCP_surface': 'RAINFALL'})
+ncum_3 = ncum_3.rename({'latitude': 'lat', 'longitude': 'lon', 'APCP_surface': 'RAINFALL'})
+ncum_5 = ncum_5.rename({'latitude': 'lat', 'longitude': 'lon', 'APCP_surface': 'RAINFALL'})
 # === Regrid model and corrected data to match obs ===
 regrid_to_obs = lambda ds: ds.interp_like(obs, method='nearest')
 
@@ -63,66 +63,65 @@ def clip_to_shape(ds):
 
 obs, ncum_1, ncum_3, ncum_5, EQM_1, EQM_3, EQM_5, PQM_1, PQM_3, PQM_5, GPQM_1, GPQM_3, GPQM_5 = [clip_to_shape(ds) for ds in datasets]
 
-# === Extract and clean data for analysis ===
-def clean_flatten(ds, varname):
-    arr = ds[varname].mean(dim='time').values.flatten()
-    arr = arr[~np.isnan(arr)]
-    return arr[arr > 0]
+def binary_classification(obs_data, model_data, threshold=64.5):
+    obs_event = obs_data > threshold
+    model_event = model_data > threshold
 
-obs_data     = clean_flatten(obs, "rf")
-ncum1_data   = clean_flatten(ncum_1, "APCP_surface")
-ncum3_data   = clean_flatten(ncum_3, "APCP_surface")
-ncum5_data   = clean_flatten(ncum_5, "APCP_surface")
-EQM1_data    = clean_flatten(EQM_1, "RAINFALL")
-EQM3_data    = clean_flatten(EQM_3, "RAINFALL")
-EQM5_data    = clean_flatten(EQM_5, "RAINFALL")
-PQM1_data    = clean_flatten(PQM_1, "RAINFALL")
-PQM3_data    = clean_flatten(PQM_3, "RAINFALL")
-PQM5_data    = clean_flatten(PQM_5, "RAINFALL")
-GPQM1_data   = clean_flatten(GPQM_1, "RAINFALL")
-GPQM3_data   = clean_flatten(GPQM_3, "RAINFALL")
-GPQM5_data   = clean_flatten(GPQM_5, "RAINFALL")
-
-def plot_qq(obs_data, model_data, label, ax):
-    # Sort both
-    obs_sorted = np.sort(obs_data)
-    model_sorted = np.sort(model_data)
+    hit = ((model_event) & (obs_event)).sum(dim=["time", "lat", "lon"])
+    miss = ((~model_event) & (obs_event)).sum(dim=["time", "lat", "lon"])
+    false_alarm = ((model_event) & (~obs_event)).sum(dim=["time", "lat", "lon"])
+    correct_negative = ((~model_event) & (~obs_event)).sum(dim=["time", "lat", "lon"])
     
-    # Ensure equal lengths
-    min_len = min(len(obs_sorted), len(model_sorted))
-    obs_sorted = obs_sorted[:min_len]
-    model_sorted = model_sorted[:min_len]
+    return {
+        "Hit": hit.item(),
+        "Miss": miss.item(),
+        "False Alarm": false_alarm.item(),
+        "Correct Negative": correct_negative.item()
+    }
 
-    ax.scatter(obs_sorted, model_sorted, alpha=0.5, s=10, label=label)
-    ax.plot([obs_sorted.min(), obs_sorted.max()],
-            [obs_sorted.min(), obs_sorted.max()],
-            color='red', linestyle='--', lw=1)
-    ax.set_xlabel("Observed Rainfall (mm)")
-    ax.set_ylabel("Model Rainfall (mm)")
-    ax.set_title(f"QQ Plot: {label}")
-    ax.grid(True)
+def compute_sedi(stats_dict, eps=1e-10):
+    hit = stats_dict["Hit"]
+    miss = stats_dict["Miss"]
+    fa = stats_dict["False Alarm"]
+    cn = stats_dict["Correct Negative"]
 
-models = {
-    "NCUM Day1": ncum1_data,
-    "NCUM Day3": ncum3_data,
-    "NCUM Day5": ncum5_data,
-    "EQM Day1": EQM1_data,
-    "EQM Day3": EQM3_data,
-    "EQM Day5": EQM5_data,
-    "PQM Day1": PQM1_data,
-    "PQM Day3": PQM3_data,
-    "PQM Day5": PQM5_data,
-    "GPQM Day1": GPQM1_data,
-    "GPQM Day3": GPQM3_data,
-    "GPQM Day5": GPQM5_data
+    H = hit / (hit + miss + eps)
+    F = fa / (fa + cn + eps)
+
+    # Bound values away from 0 and 1
+    H = np.clip(H, eps, 1 - eps)
+    F = np.clip(F, eps, 1 - eps)
+
+    sedi_numerator = np.log(F) - np.log(H) - np.log(1 - F) + np.log(1 - H)
+    sedi_denominator = np.log(F) + np.log(H) + np.log(1 - F) + np.log(1 - H)
+    sedi = sedi_numerator / sedi_denominator
+
+    return sedi
+
+# === Compute SEDI scores for all datasets ===
+datasets_dict = {
+    "ncum_1": ncum_1, "ncum_3": ncum_3, "ncum_5": ncum_5,
+    "EQM_1": EQM_1, "EQM_3": EQM_3, "EQM_5": EQM_5,
+    "PQM_1": PQM_1, "PQM_3": PQM_3, "PQM_5": PQM_5,
+    "GPQM_1": GPQM_1, "GPQM_3": GPQM_3, "GPQM_5": GPQM_5
 }
 
-fig, axs = plt.subplots(4, 3, figsize=(15, 18))
-axs = axs.flatten()
+sedi_scores = {}
 
-for i, (label, model_data) in enumerate(models.items()):
-    plot_qq(obs_data, model_data, label, axs[i])
+for name, dataset in datasets_dict.items():
+    model_data = dataset["RAINFALL"]
+    obs_data = obs["rf"]
+    stats = binary_classification(obs_data, model_data, threshold=64.5)
+    sedi_scores[name] = compute_sedi(stats)
 
+# === Plot SEDI scores as a bar plot ===
+plt.figure(figsize=(12, 6))
+plt.bar(sedi_scores.keys(), sedi_scores.values(), color='mediumseagreen', edgecolor='black')
+plt.xlabel('Datasets', fontsize=12)
+plt.ylabel('SEDI Score', fontsize=12)
+plt.title('SEDI Scores for Different Datasets', fontsize=14)
+plt.xticks(rotation=45, ha='right')
+plt.yticks(np.arange(0, 0.7, 0.1))  # Add ticks at intervals of 0.1
+plt.grid(axis='y', linestyle='--', alpha=0.7)  # Add horizontal grid lines
 plt.tight_layout()
-plt.suptitle("QQ Plots of Models vs Observed Rainfall", fontsize=16, y=1.02)
 plt.show()

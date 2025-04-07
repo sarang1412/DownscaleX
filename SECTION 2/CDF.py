@@ -83,46 +83,22 @@ GPQM1_data   = clean_flatten(GPQM_1, "RAINFALL")
 GPQM3_data   = clean_flatten(GPQM_3, "RAINFALL")
 GPQM5_data   = clean_flatten(GPQM_5, "RAINFALL")
 
-def plot_qq(obs_data, model_data, label, ax):
-    # Sort both
-    obs_sorted = np.sort(obs_data)
-    model_sorted = np.sort(model_data)
-    
-    # Ensure equal lengths
-    min_len = min(len(obs_sorted), len(model_sorted))
-    obs_sorted = obs_sorted[:min_len]
-    model_sorted = model_sorted[:min_len]
+def plot_cdf(data, label, colour):
+    sorted_data = np.sort(data)
+    cdf = np.arange(1, len(sorted_data)+1) / len(sorted_data)
+    plt.plot(sorted_data, cdf, label=label, color=colour)
 
-    ax.scatter(obs_sorted, model_sorted, alpha=0.5, s=10, label=label)
-    ax.plot([obs_sorted.min(), obs_sorted.max()],
-            [obs_sorted.min(), obs_sorted.max()],
-            color='red', linestyle='--', lw=1)
-    ax.set_xlabel("Observed Rainfall (mm)")
-    ax.set_ylabel("Model Rainfall (mm)")
-    ax.set_title(f"QQ Plot: {label}")
-    ax.grid(True)
+plt.figure(figsize=(8, 6))
+plot_cdf(obs_data, "Observed (IMD-MSG)", "black")
+plot_cdf(ncum1_data, "Raw NCUM-D1", "red")
+plot_cdf(EQM1_data, "EQM D1", "blue")
+plot_cdf(PQM1_data, "PQM D1", "green")
+plot_cdf(GPQM1_data, "GPQM D1", "orange")
 
-models = {
-    "NCUM Day1": ncum1_data,
-    "NCUM Day3": ncum3_data,
-    "NCUM Day5": ncum5_data,
-    "EQM Day1": EQM1_data,
-    "EQM Day3": EQM3_data,
-    "EQM Day5": EQM5_data,
-    "PQM Day1": PQM1_data,
-    "PQM Day3": PQM3_data,
-    "PQM Day5": PQM5_data,
-    "GPQM Day1": GPQM1_data,
-    "GPQM Day3": GPQM3_data,
-    "GPQM Day5": GPQM5_data
-}
-
-fig, axs = plt.subplots(4, 3, figsize=(15, 18))
-axs = axs.flatten()
-
-for i, (label, model_data) in enumerate(models.items()):
-    plot_qq(obs_data, model_data, label, axs[i])
-
+plt.xlabel("Rainfall (mm)")
+plt.ylabel("Cumulative Probability")
+plt.title("CDF Plot - Day 1 Forecast vs Observations")
+plt.grid(True)
+plt.legend()
 plt.tight_layout()
-plt.suptitle("QQ Plots of Models vs Observed Rainfall", fontsize=16, y=1.02)
 plt.show()
